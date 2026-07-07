@@ -1,5 +1,5 @@
 import { Suspense, useRef, useMemo } from 'react'
-import { Canvas, useFrame, useLoader } from '@react-three/fiber'
+import { Canvas, useFrame } from '@react-three/fiber'
 import {
   Environment,
   ContactShadows,
@@ -8,8 +8,11 @@ import {
   useGLTF,
   PerspectiveCamera,
 } from '@react-three/drei'
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 import * as THREE from 'three'
+
+// drei's useGLTF auto-registers Meshopt + Draco decoders,
+// which are required for GLBs compressed with @gltf-transform (EXT_meshopt_compression).
+const MODEL_URL = '/models/founder.glb'
 
 /**
  * Hero 3D scene for LMAJHOL.
@@ -26,7 +29,7 @@ import * as THREE from 'three'
 
 function FounderBust({ scrollProgress }: { scrollProgress: React.MutableRefObject<number> }) {
   const groupRef = useRef<THREE.Group>(null)
-  const gltf = useLoader(GLTFLoader, '/models/founder.glb')
+  const gltf = useGLTF(MODEL_URL) as any
 
   const scene = useMemo(() => {
     const s = gltf.scene.clone(true)
@@ -220,4 +223,4 @@ export default function HeroScene({
   )
 }
 
-useGLTF.preload('/models/founder.glb')
+useGLTF.preload(MODEL_URL)
